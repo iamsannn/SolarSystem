@@ -1,68 +1,68 @@
-/* ---------- Tokens ---------- */
-:root {
-  --space: #02030a;
-  --panel: rgba(10, 14, 30, 0.62);
-  --line: rgba(160, 185, 255, 0.16);
-  --text: #e8ecfa;
-  --muted: #8f9ac0;
-  --sun: #ffb347;
-  --ease: cubic-bezier(.2, .8, .2, 1);
-}
+/* style.css — layout for the 3D scene. Glass look comes from liquid-glass.css (classes: lg, lg-text, lg-nav…). */
+:root { --space: #02030a; --muted: #9aa5cc; --sun: #ffb347; --ease: cubic-bezier(.2,.9,.25,1.1); }
 * { box-sizing: border-box; }
-html, body { margin: 0; height: 100%; overflow: hidden; background: var(--space); color: var(--text);
+html, body { margin: 0; height: 100%; overflow: hidden; background: var(--space); color: var(--lg-text);
   font-family: "Avenir Next", "Segoe UI", system-ui, sans-serif; }
 #scene { position: fixed; inset: 0; }
 #scene canvas { display: block; }
-
-/* ---------- Loader ---------- */
-#loader { position: fixed; inset: 0; display: grid; place-items: center; background: var(--space);
-  z-index: 50; transition: opacity 1s var(--ease); color: var(--muted); }
+#loader { position: fixed; inset: 0; display: grid; place-items: center; background: var(--space); z-index: 50;
+  transition: opacity 1s ease; color: var(--muted); }
 #loader.done { opacity: 0; pointer-events: none; }
 
-/* ---------- Top bar ---------- */
-.topbar { position: fixed; top: 0; left: 0; right: 0; display: flex; align-items: center; gap: 24px;
-  padding: 14px 22px; z-index: 10; background: linear-gradient(var(--space), transparent); }
-.topbar h1 { margin: 0; font-size: 20px; font-weight: 600; letter-spacing: .02em; }
-#planet-nav { display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; }
-#planet-nav button, .controls button { background: var(--panel); color: var(--text); border: 1px solid var(--line);
-  border-radius: 999px; padding: 6px 14px; font: inherit; font-size: 14px; cursor: pointer;
-  backdrop-filter: blur(10px); transition: background .25s, border-color .25s, color .25s; white-space: nowrap; }
-#planet-nav button:hover, .controls button:hover { border-color: var(--sun); color: var(--sun); }
-#planet-nav button.active, .controls button[aria-pressed="true"] { background: rgba(255,179,71,.16); border-color: var(--sun); }
-button:focus-visible, input:focus-visible { outline: 2px solid var(--sun); outline-offset: 2px; }
+/* ---------- Top navigation (glass pill) ---------- */
+.topbar.lg-nav { position: fixed; top: 14px; left: 50%; transform: translateX(-50%); width: min(1120px, calc(100% - 28px)); margin: 0; z-index: 10; }
+.topbar h1 { margin: 0; font-size: 22px; white-space: nowrap; }
+#planet-nav { flex: 1; min-width: 0; overflow-x: auto; flex-wrap: nowrap; scrollbar-width: none; justify-content: center; }
+.lg-nav-links a, .lg-nav-links button { color: inherit; font: inherit; font-size: 14px; font-weight: 500; text-decoration: none;
+  background: none; border: 0; cursor: pointer; padding: 8px 14px; border-radius: 999px; white-space: nowrap;
+  transition: background .3s ease, box-shadow .3s ease, transform .4s var(--lg-ease); }
+.lg-nav-links button:hover, .lg-nav-links a:hover { background: rgb(var(--lg-tint) / .18); transform: translateY(-1px); }
+.lg-nav-links button.active { background: rgb(var(--lg-tint) / .26);
+  box-shadow: inset 0 1px 0 rgb(var(--lg-edge) / .6), inset 0 0 12px rgb(var(--lg-edge) / .12), 0 4px 12px -4px rgb(var(--lg-shadow) / .35); }
+button:focus-visible, input:focus-visible, a:focus-visible { outline: 2px solid var(--sun); outline-offset: 2px; }
 
-/* ---------- Tooltip ---------- */
-#tooltip { position: fixed; pointer-events: none; padding: 4px 10px; border-radius: 6px; font-size: 13px;
-  background: var(--panel); border: 1px solid var(--line); backdrop-filter: blur(8px);
-  opacity: 0; transition: opacity .2s; z-index: 20; transform: translate(14px, 14px); }
+/* ---------- Labels & tooltip (standalone glass chips) ---------- */
+#labels { position: fixed; inset: 0; z-index: 5; pointer-events: none; overflow: hidden; transition: opacity .4s ease; }
+#labels.off { opacity: 0; }
+.label, #tooltip { position: absolute; left: 0; top: 0; padding: 3px 11px; border-radius: 999px; font-size: 12px; font-weight: 600;
+  letter-spacing: .02em; color: var(--lg-text); white-space: nowrap; will-change: transform;
+  background: rgb(var(--lg-tint) / .14); -webkit-backdrop-filter: blur(8px) saturate(170%); backdrop-filter: blur(8px) saturate(170%);
+  box-shadow: inset 0 1px 0 rgb(var(--lg-edge) / .5), 0 4px 14px rgb(var(--lg-shadow) / .35); transition: opacity .3s ease; }
+#tooltip { position: fixed; pointer-events: none; opacity: 0; z-index: 20; transform: translate(14px, 14px); font-size: 13px; }
 
-/* ---------- Info overlay ---------- */
-#info { position: fixed; top: 76px; right: 22px; width: min(320px, calc(100vw - 44px)); padding: 22px;
-  background: var(--panel); border: 1px solid var(--line); border-radius: 14px; backdrop-filter: blur(16px);
-  z-index: 10; opacity: 0; transform: translateX(24px); pointer-events: none;
-  transition: opacity .5s var(--ease), transform .5s var(--ease); }
+/* ---------- Info panel ---------- */
+#info { position: fixed; top: 84px; right: 22px; width: min(330px, calc(100vw - 44px)); padding: 22px 24px; z-index: 10;
+  opacity: 0; transform: translateX(28px); pointer-events: none; transition: opacity .5s ease, transform .6s var(--ease); }
 #info.open { opacity: 1; transform: none; pointer-events: auto; }
-#info h2 { margin: 0 0 8px; font-size: 26px; font-weight: 600; }
-#info p { margin: 0 0 16px; color: var(--muted); line-height: 1.5; font-size: 15px; }
+#info h2 { margin: 0 0 8px; font-size: 34px; }
+#info p { margin: 0 0 16px; color: var(--muted); line-height: 1.55; font-size: 15px; }
 #info dl { margin: 0; display: grid; grid-template-columns: auto 1fr; gap: 8px 16px; font-size: 14px; }
-#info dt { color: var(--muted); }
-#info dd { margin: 0; text-align: right; }
-#info-close { position: absolute; top: 10px; right: 12px; background: none; border: 0; color: var(--muted);
-  font-size: 24px; cursor: pointer; }
-#info-close:hover { color: var(--text); }
+#info dt { color: var(--muted); } #info dd { margin: 0; text-align: right; }
+#info-close { position: absolute; top: 10px; right: 14px; background: none; border: 0; color: var(--muted); font-size: 24px; cursor: pointer; }
+#info-close:hover { color: var(--lg-text); }
 
-/* ---------- Bottom controls ---------- */
-.controls { position: fixed; bottom: 16px; left: 50%; transform: translateX(-50%); display: flex; align-items: center;
-  gap: 12px; padding: 8px 14px; z-index: 10; background: var(--panel); border: 1px solid var(--line);
-  border-radius: 999px; backdrop-filter: blur(14px); font-size: 14px; max-width: calc(100vw - 24px); }
+/* ---------- Bottom control menu + its show/hide toggle ---------- */
+.dock { position: fixed; left: 0; right: 0; display: flex; justify-content: center; pointer-events: none; z-index: 10; padding: 0 12px; }
+.controls-dock { bottom: 70px; }
+.toggle-dock { bottom: 16px; }
+.controls, #ctl-toggle { pointer-events: auto; }
+.controls { display: flex; align-items: center; flex-wrap: wrap; justify-content: center; gap: 10px; padding: 9px 16px; border-radius: 999px; font-size: 14px;
+  transition: transform .6s var(--ease), opacity .4s ease; }
+.controls-dock.hidden .controls { transform: translateY(26px) scale(.94); opacity: 0; pointer-events: none; }
+.controls button { color: inherit; font: inherit; font-weight: 500; cursor: pointer; border: 0; border-radius: 999px; padding: 8px 16px;
+  background: rgb(var(--lg-tint) / .14); box-shadow: inset 0 1px 0 rgb(var(--lg-edge) / .4); transition: background .25s, transform .3s var(--lg-ease); }
+.controls button:hover { background: rgb(var(--lg-tint) / .26); transform: translateY(-1px); }
+.controls button:active { transform: scale(.96); }
+.controls button[aria-pressed="true"] { background: rgb(var(--lg-accent) / .38); }
 .controls label { display: flex; align-items: center; gap: 8px; color: var(--muted); }
 .controls input[type=range] { accent-color: var(--sun); width: 110px; }
 .hint { color: var(--muted); font-size: 12px; }
+#ctl-toggle { padding: 8px 20px; font-size: 13px; }
 
 @media (max-width: 760px) {
-  .topbar { flex-direction: column; align-items: flex-start; gap: 8px; }
-  #planet-nav { max-width: 100%; }
+  .topbar.lg-nav { flex-wrap: nowrap; gap: 8px; padding: 8px 10px 8px 16px; border-radius: 999px; }
+  .topbar h1 { font-size: 17px; }
   .hint { display: none; }
-  #info { top: auto; bottom: 76px; right: 12px; }
+  .controls { border-radius: 26px; }
+  #info { top: auto; bottom: 150px; right: 12px; }
 }
-@media (prefers-reduced-motion: reduce) { * { transition-duration: .01ms !important; } }

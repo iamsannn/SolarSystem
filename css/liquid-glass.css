@@ -1,0 +1,190 @@
+/* ==========================================================================
+   LIQUID GLASS — drop-in CSS for any website
+   --------------------------------------------------------------------------
+   HOW TO USE
+   1. Link this file:  <link rel="stylesheet" href="liquid-glass.css">
+   2. Add a class to any element:  <div class="lg lg-card">…</div>
+   3. Place it over something colourful (image, gradient, video). Glass only
+      looks like glass when there is something behind it to blur and bend.
+
+   CLASSES
+   .lg          base glass (required)       .lg-card    roomy panel
+   .lg-nav      sticky top bar (links get glass hover + active pills)
+                                            .lg-btn     button / link button
+   .lg-pill     small rounded tag           .lg-input   text field
+   .lg-text     glassy headline text        .lg-text-shine  same + moving shine
+   .lg-tint     adds a soft colour tint     .lg-refract optional lens bending
+                                                        (Chrome/Edge only, needs
+                                                        the SVG filter in demo.html)
+   THEME: automatic (light/dark). Force with <html data-theme="dark|light">.
+   TWEAK: change the --lg-* values below, or override them on any element.
+   ========================================================================== */
+
+:root {
+  --lg-blur: 22px;            /* how frosted the glass is            */
+  --lg-saturate: 180%;        /* colour boost of what shows through  */
+  --lg-radius: 26px;
+  --lg-tint: 255 255 255;     /* RGB of the glass body (light)       */
+  --lg-tint-alpha: .14;
+  --lg-edge: 255 255 255;     /* RGB of the rim light                */
+  --lg-shadow: 20 24 60;      /* RGB of the drop shadow              */
+  --lg-text: #0f1330;
+  --lg-accent: 120 140 255;   /* RGB used by .lg-tint and focus ring */
+  --lg-ease: cubic-bezier(.2, .9, .25, 1.2);   /* slightly springy   */
+}
+
+/* Dark theme: automatic, or forced with data-theme="dark" */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --lg-tint: 200 210 255; --lg-tint-alpha: .09;
+    --lg-edge: 200 215 255; --lg-shadow: 0 0 0; --lg-text: #eef1ff;
+  }
+}
+:root[data-theme="dark"] {
+  --lg-tint: 200 210 255; --lg-tint-alpha: .09;
+  --lg-edge: 200 215 255; --lg-shadow: 0 0 0; --lg-text: #eef1ff;
+}
+
+/* ---------- Base glass ---------- */
+.lg {
+  position: relative;
+  isolation: isolate;                 /* keeps the layers below inside */
+  color: var(--lg-text);
+  border-radius: var(--lg-radius);
+  /* body: a faint diagonal gradient so the glass has volume */
+  background:
+    linear-gradient(135deg,
+      rgb(var(--lg-tint) / calc(var(--lg-tint-alpha) + .10)) 0%,
+      rgb(var(--lg-tint) / var(--lg-tint-alpha)) 45%,
+      rgb(var(--lg-tint) / calc(var(--lg-tint-alpha) - .04)) 100%);
+  -webkit-backdrop-filter: blur(var(--lg-blur)) saturate(var(--lg-saturate)) brightness(1.06);
+          backdrop-filter: blur(var(--lg-blur)) saturate(var(--lg-saturate)) brightness(1.06);
+  box-shadow:
+    inset 0 1px 0 rgb(var(--lg-edge) / .55),            /* top specular line      */
+    inset 0 -1px 0 rgb(var(--lg-edge) / .10),           /* bottom bounce light    */
+    inset 0 0 22px rgb(var(--lg-edge) / .10),           /* soft inner glow        */
+    0 1px 2px rgb(var(--lg-shadow) / .10),              /* contact shadow         */
+    0 18px 40px -12px rgb(var(--lg-shadow) / .35);      /* lifted, diffuse shadow */
+  transition: transform .5s var(--lg-ease), box-shadow .4s ease, background .4s ease;
+}
+
+/* Rim: a 1px gradient border, bright at the top-left and bottom-right like
+   light catching a curved glass edge. */
+.lg::before {
+  content: ""; position: absolute; inset: 0; z-index: -1; border-radius: inherit; padding: 1px;
+  background: linear-gradient(135deg,
+    rgb(var(--lg-edge) / .85) 0%, rgb(var(--lg-edge) / .05) 30%,
+    rgb(var(--lg-edge) / .05) 70%, rgb(var(--lg-edge) / .55) 100%);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor; mask-composite: exclude;
+  pointer-events: none;
+}
+
+/* Sheen: a soft highlight that glides across on hover */
+.lg::after {
+  content: ""; position: absolute; inset: 0; z-index: -1; border-radius: inherit; overflow: hidden;
+  background: linear-gradient(110deg, transparent 35%, rgb(var(--lg-edge) / .28) 50%, transparent 65%);
+  background-size: 250% 100%; background-position: 120% 0; opacity: 0;
+  transition: background-position .9s ease, opacity .4s ease; pointer-events: none;
+}
+.lg:hover::after { background-position: -20% 0; opacity: 1; }
+.lg:hover { box-shadow:
+    inset 0 1px 0 rgb(var(--lg-edge) / .7), inset 0 -1px 0 rgb(var(--lg-edge) / .14),
+    inset 0 0 28px rgb(var(--lg-edge) / .14), 0 1px 2px rgb(var(--lg-shadow) / .12),
+    0 26px 50px -12px rgb(var(--lg-shadow) / .42); }
+
+/* ---------- Components ---------- */
+.lg-card { padding: 28px 30px; }
+.lg-card:hover { transform: translateY(-4px); }
+
+.lg-nav {
+  position: sticky; top: 14px; z-index: 50; margin: 14px auto; width: min(960px, calc(100% - 28px));
+  display: flex; align-items: center; justify-content: space-between; gap: 16px;
+  padding: 10px 14px 10px 22px; border-radius: 999px;
+}
+.lg-nav a { color: inherit; text-decoration: none; font-weight: 500; opacity: .8; transition: opacity .2s; }
+.lg-nav a:hover { opacity: 1; }
+
+.lg-btn, .lg-pill {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px; border: 0;
+  font: inherit; font-weight: 600; text-decoration: none; cursor: pointer; border-radius: 999px;
+}
+.lg-btn  { padding: 12px 26px; }
+.lg-pill { padding: 5px 14px; font-size: .85em; font-weight: 500; }
+.lg-btn:hover { transform: translateY(-2px) scale(1.03); }
+.lg-btn:active { transform: scale(.97); transition-duration: .12s; }   /* squish on press */
+
+.lg-input {
+  width: 100%; padding: 13px 18px; font: inherit; border: 0; outline: 0; border-radius: 16px;
+  box-shadow: inset 0 2px 6px rgb(var(--lg-shadow) / .18), inset 0 1px 0 rgb(var(--lg-edge) / .35);
+}
+.lg-input::placeholder { color: var(--lg-text); opacity: .5; }
+.lg-input:focus { box-shadow: inset 0 2px 6px rgb(var(--lg-shadow) / .18), 0 0 0 3px rgb(var(--lg-accent) / .55); }
+.lg-btn:focus-visible, .lg-nav a:focus-visible { outline: 2px solid rgb(var(--lg-accent)); outline-offset: 3px; }
+
+/* Colour tint, e.g. <button class="lg lg-btn lg-tint"> */
+.lg-tint { background:
+    linear-gradient(135deg, rgb(var(--lg-accent) / .42), rgb(var(--lg-accent) / .16)),
+    linear-gradient(135deg, rgb(var(--lg-tint) / .18), rgb(var(--lg-tint) / .06)); }
+
+/* Optional lens bending: backdrop is distorted by the SVG filter #lg-distort.
+   Only Chromium browsers support this; others silently keep the normal blur. */
+.lg-refract { -webkit-backdrop-filter: blur(8px) saturate(var(--lg-saturate)); }
+@supports (backdrop-filter: url(#x)) {
+  .lg-refract { backdrop-filter: url(#lg-distort) blur(8px) saturate(var(--lg-saturate)) brightness(1.06); }
+}
+
+/* ---------- Fallbacks & accessibility ---------- */
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .lg { background: rgb(var(--lg-tint) / .82); }
+  :root[data-theme="dark"] .lg { background: rgb(28 32 60 / .9); }
+}
+@media (prefers-reduced-transparency: reduce) { .lg { -webkit-backdrop-filter: none; backdrop-filter: none; background: rgb(var(--lg-tint) / .9); } }
+@media (prefers-reduced-motion: reduce) { .lg, .lg::after { transition: none; } .lg:hover { transform: none; } }
+
+/* ==========================================================================
+   GLASS TEXT — for big headlines (use 32px or larger; thin text goes unreadable)
+   <h1 class="lg-text">Hello</h1>
+   The letters are see-through with a bright top and a soft fade, a thin rim
+   and a shadow, so the background glows through them.
+   ========================================================================== */
+.lg-text {
+  color: transparent;
+  background: linear-gradient(180deg, rgb(var(--lg-edge) / .98) 0%, rgb(var(--lg-edge) / .55) 55%, rgb(var(--lg-edge) / .3) 100%);
+  -webkit-background-clip: text; background-clip: text;
+  -webkit-text-stroke: 1px rgb(var(--lg-edge) / .45);
+  font-weight: 800; letter-spacing: -.02em;
+  filter: drop-shadow(0 1px 0 rgb(var(--lg-edge) / .6)) drop-shadow(0 10px 22px rgb(var(--lg-shadow) / .35));
+}
+/* Light theme: white glass would vanish on a pale page, so switch to a cool tinted glass */
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) .lg-text {
+    background-image: linear-gradient(180deg, rgb(255 255 255 / .95) 0%, rgb(var(--lg-accent) / .55) 100%);
+    -webkit-text-stroke-color: rgb(255 255 255 / .8);
+  }
+}
+/* Shine: a bright band slowly sweeps across the letters */
+.lg-text-shine {
+  background-image:
+    linear-gradient(105deg, transparent 38%, rgb(255 255 255 / .95) 50%, transparent 62%),
+    linear-gradient(180deg, rgb(var(--lg-edge) / .98), rgb(var(--lg-edge) / .3));
+  background-size: 250% 100%, 100% 100%; background-repeat: no-repeat;
+  animation: lg-shine 5s ease-in-out infinite;
+}
+@keyframes lg-shine { from { background-position: 130% 0, 0 0; } to { background-position: -30% 0, 0 0; } }
+
+/* ==========================================================================
+   NAV BAR EXTRAS — wrap your links in <div class="lg-nav-links">
+   Hovered links get a glass pill; mark the current page with class="is-active"
+   (or aria-current="page").
+   ========================================================================== */
+.lg-nav-links { display: flex; align-items: center; gap: 4px; flex-wrap: wrap; }
+.lg-nav-links a { padding: 8px 16px; border-radius: 999px; opacity: .85;
+  transition: background .3s ease, box-shadow .3s ease, opacity .2s, transform .4s var(--lg-ease); }
+.lg-nav-links a:hover { background: rgb(var(--lg-tint) / .18); opacity: 1; transform: translateY(-1px); }
+.lg-nav-links a.is-active, .lg-nav-links a[aria-current="page"] {
+  opacity: 1; background: rgb(var(--lg-tint) / .26);
+  box-shadow: inset 0 1px 0 rgb(var(--lg-edge) / .6), inset 0 0 12px rgb(var(--lg-edge) / .12), 0 4px 12px -4px rgb(var(--lg-shadow) / .35); }
+/* Small screens: let the bar wrap into a rounded panel instead of a long pill */
+@media (max-width: 640px) { .lg-nav { border-radius: 26px; flex-wrap: wrap; justify-content: center; padding: 12px 14px; } }
+@media (prefers-reduced-motion: reduce) { .lg-text-shine { animation: none; } }

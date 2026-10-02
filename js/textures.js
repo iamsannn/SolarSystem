@@ -73,3 +73,16 @@ function makeRingTexture() {
   }
   return new THREE.CanvasTexture(c);
 }
+
+// Soft purple/blue/pink nebula with a faint milky-way band, drawn on black for additive blending
+function makeNebulaTexture(W = 1024, H = 512) {
+  const fbm = makeNoise(321), c = document.createElement('canvas'); c.width = W; c.height = H;
+  const ctx = c.getContext('2d'), img = ctx.createImageData(W, H);
+  for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
+    const u = x / W, v = y / H, n = fbm(u * 6, v * 4, 5), m = fbm(u * 3 + 9, v * 2 + 4, 4);
+    const band = Math.exp(-Math.pow((v - .5) * 4, 2));
+    const k = Math.pow(Math.max(0, Math.min(1, n * 1.5 - .45)), 1.6) * (.25 + band * .9) * .55;
+    img.data.set([(70 + 150 * m) * k, (40 + 60 * (1 - m)) * k, (150 + 90 * (1 - m)) * k, 255], (y * W + x) * 4);
+  }
+  ctx.putImageData(img, 0, 0); return new THREE.CanvasTexture(c);
+}

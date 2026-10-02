@@ -79,6 +79,14 @@ PLANETS.forEach(p => {
 const starLayers = createStarfield(scene);
 const shooting = createShootingStars(scene);
 
+// Slow-drifting nebula dome (follows the camera, so it always feels infinitely far away)
+const nebula = new THREE.Mesh(new THREE.SphereGeometry(2400, 32, 16), new THREE.MeshBasicMaterial({
+  map: makeNebulaTexture(), side: THREE.BackSide, transparent: true, blending: THREE.AdditiveBlending, depthWrite: false }));
+nebula.renderOrder = -2; scene.add(nebula);
+
+// Asteroid belt between Mars and Jupiter
+const belt = createAsteroidBelt(scene);
+
 // ---------- Simulation speed ----------
 // 1x = one Earth year in 40 s; one Earth day in 6 s. Periods keep real ratios.
 const ORBIT_RATE = 365.25 / 40, SPIN_RATE = 24 / 6;
@@ -120,6 +128,31 @@ const nav = document.getElementById('planet-nav');
   b.onclick = () => focusOn(m); nav.appendChild(b);
 });
 document.getElementById('info-close').onclick = goHome;
+
+// ---------- Planet labels (toggle with the Labels button) ----------
+const labelLayer = document.getElementById('labels'), labelV = new THREE.Vector3();
+const labelItems = [sun, ...bodies.map(b => b.mesh)].map(m => {
+  const el = document.createElement('div'); el.className = 'label'; el.textContent = m.userData.name; labelLayer.appendChild(el); return { m, el };
+});
+function updateLabels() {
+  if (labelLayer.classList.contains('off')) return;
+  camera.updateMatrixWorld();
+  labelItems.forEach(({ m, el }) => {
+    m.getWorldPosition(labelV); labelV.y += m.userData.radius * 1.25 + .6; labelV.project(camera);
+    el.style.opacity = labelV.z > 1 ? 0 : 1;
+    el.style.transform = `translate(${(labelV.x * .5 + .5) * innerWidth}px, ${(-labelV.y * .5 + .5) * innerHeight}px) translate(-50%, -100%)`;
+  });
+}
+document.getElementById('btn-labels').onclick = e => {
+  labelLayer.classList.toggle('off'); e.currentTarget.setAttribute('aria-pressed', !labelLayer.classList.contains('off'));
+};
+
+// ---------- Show / hide the control menu ----------
+const ctlToggle = document.getElementById('ctl-toggle');
+ctlToggle.onclick = () => {
+  const hidden = document.getElementById('controls').classList.toggle('hidden');
+  ctlToggle.textContent = hidden ? 'Show controls' : 'Hide controls'; ctlToggle.setAttribute('aria-expanded', !hidden);
+};
 document.getElementById('btn-home').onclick = goHome;
 document.getElementById('btn-pause').onclick = e => { paused = !paused; e.target.textContent = paused ? 'Play' : 'Pause'; };
 document.getElementById('speed').oninput = e => speed = +e.target.value;
@@ -159,6 +192,7 @@ function animate() {
   const dt = Math.min(clock.getDelta(), .1), sim = paused ? 0 : dt * speed;
 
   sun.rotation.y += sim * .05;
+  updateAsteroidBelt(belt, sim, ORBIT_RATE);
   bodies.forEach(p => {
     p.angle += sim * ORBIT_RATE * (Math.PI * 2 / p.orbitDays);                 // orbit
     p.pivot.position.set(Math.cos(p.angle) * p.distance, 0, Math.sin(p.angle) * p.distance);
@@ -175,9 +209,12 @@ function animate() {
     const p = worldPos(focus); camera.position.add(p.clone().sub(prevPos)); controls.target.copy(p); prevPos.copy(p);
   }
 
-  updateStarfield(starLayers, camera);
+  updateStarfield(starLayers, camera, clock.elapsedTime);
+  nebula.position.copy(camera.position);                          // slow background drift
+  nebula.rotation.y += dt * .006; nebula.rotation.x = Math.sin(clock.elapsedTime * .02) * .08;
   updateShootingStars(shooting, dt, camera);
   controls.update();
+  updateLabels();
   renderer.render(scene, camera);
 }
 animate();
