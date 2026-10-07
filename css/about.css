@@ -1,26 +1,24 @@
-/* about.css — About page. Reuses the nav, glass and text styles from the main site. */
+/* about.css — clean, static About page. No animation, no moving backgrounds. */
 html, body { height: auto; overflow: auto; }
-body { min-height: 100vh; background: #050818; }
-/* slow drifting colour orbs + twinkling dots = calm galaxy backdrop */
-.bg { position: fixed; inset: 0; z-index: -1; overflow: hidden; }
-.orb { position: absolute; border-radius: 50%; filter: blur(70px); opacity: .55; animation: drift 26s ease-in-out infinite alternate; }
-.o1 { width: 460px; height: 460px; background: #6a3df0; top: -120px; left: -80px; }
-.o2 { width: 520px; height: 520px; background: #2b6bff; top: 35%; right: -160px; animation-delay: -9s; }
-.o3 { width: 400px; height: 400px; background: #ff5fa2; bottom: -140px; left: 30%; animation-delay: -16s; }
-@keyframes drift { to { transform: translate(70px, -50px) scale(1.15); } }
-.dots { position: absolute; inset: 0; background-image: radial-gradient(1.5px 1.5px at 20% 30%, #fff, transparent), radial-gradient(1px 1px at 70% 20%, #cfdcff, transparent),
-  radial-gradient(1.5px 1.5px at 40% 75%, #fff, transparent), radial-gradient(1px 1px at 85% 65%, #ffe6c4, transparent), radial-gradient(1px 1px at 10% 85%, #fff, transparent);
-  background-size: 400px 400px; animation: twinkle 6s ease-in-out infinite alternate; }
-@keyframes twinkle { from { opacity: .5; } to { opacity: 1; } }
-
-.about { max-width: 920px; margin: 120px auto 60px; padding: 0 16px; display: grid; gap: 22px; }
-.about h1.lg-text { font-size: clamp(3rem, 10vw, 6rem); margin: 0; line-height: 1; }
-.lead { font-size: 1.2rem; line-height: 1.6; color: var(--muted); margin: 8px 0 0; max-width: 640px; }
-.about h2 { margin: 0 0 10px; font-size: 1.4rem; }
-.about p { line-height: 1.65; margin: 0 0 12px; color: var(--muted); }
-.grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 22px; }
-.about .lg-card { padding: 26px 28px; }
-.about .lg-card h3 { margin: 0 0 8px; }
+body { min-height: 100dvh; background: #050818; }
+.bg { position: fixed; inset: 0; z-index: -1; background:
+  radial-gradient(900px 480px at 15% -5%, rgba(70, 90, 210, .28), transparent 62%),
+  radial-gradient(800px 460px at 100% 5%, rgba(130, 70, 200, .22), transparent 60%), #050818; }
+.about { max-width: 720px; margin: calc(env(safe-area-inset-top) + 92px) auto 48px; padding: 0 16px calc(24px + env(safe-area-inset-bottom)); display: grid; gap: 16px; font-size: 16px; }
+.hero { text-align: center; padding: 20px; position: relative; display:inline-block; }
+.avatar { width: 84px; height: 84px; margin: 0 auto 18px; border-radius: 50%; display: grid; place-items: center; font-size: 38px; font-weight: 800; color: #fff;
+  background: linear-gradient(135deg, #6f8cff, #b06bff); box-shadow: inset 0 1px 0 rgb(255 255 255 / .5), 0 14px 34px -10px rgb(111 140 255 / .55); }
+.about h1.lg-text { font-family: 'orbitron', sans-serif; font-size: 5rem; font-weight: 700; color: #fff; letter-spacing: -0.05em; text-transform: uppercase;}
+.lead { font-size: 1.1rem; line-height: 1.6; color: var(--muted); margin: 14px auto 0; max-width: 34ch; }
+.about .lg-card { padding: 22px; }
+.about .lg-card:hover { transform: none; }
+.about h2 { margin: 0 0 10px; font-size: 1.15rem; }
+.about p { line-height: 1.7; margin: 0 0 12px; color: var(--muted); } .about p:last-child { margin-bottom: 0; }
+.projects { display: grid; gap: 12px; }
+.project { display: flex; gap: 14px; align-items: flex-start; }
+.project .ic { flex: none; width: 44px; height: 44px; border-radius: 14px; display: grid; place-items: center; font-size: 22px; background: rgb(var(--lg-tint) / .14); box-shadow: inset 0 1px 0 rgb(var(--lg-edge) / .4); }
+.project h3 { margin: 2px 0 4px; font-size: 1rem; } .project p { margin: 0; font-size: .95rem; }
 .tags { display: flex; gap: 8px; flex-wrap: wrap; }
-.back { justify-self: start; }
-@media (prefers-reduced-motion: reduce) { .orb, .dots { animation: none; } }
+.about .lg-btn { width: 100%; min-height: 50px; }
+.foot { text-align: center; color: var(--muted); font-size: .85rem; padding-top: 6px; }
+@media (min-width: 700px) { .about .lg-btn { width: auto; justify-self: center; padding: 14px 34px; } }

@@ -77,3 +77,13 @@ const MOONS = {
     { n: 'Triton', r: .6, m: 3.3, d: -5.88, km: 2707, dk: 354800, c: [[0,[170,150,150]],[1,[245,235,235]]], f: 'Orbits backwards and has nitrogen geysers. It is probably a captured dwarf planet.' }]
 };
 PLANETS.forEach(p => { p.moons = MOONS[p.name] || []; p.L0 = L0[p.name]; });
+
+/* Extra facts shown when you press "More details" */
+const EXTRA = {
+  Mercury: ['Rocky planet', .39, '167 °C', '3.7 m/s²'], Venus: ['Rocky planet', .72, '464 °C', '8.9 m/s²'], Earth: ['Rocky planet', 1, '15 °C', '9.8 m/s²'],
+  Mars: ['Rocky planet', 1.52, '−65 °C', '3.7 m/s²'], Jupiter: ['Gas giant', 5.2, '−110 °C', '24.8 m/s²'], Saturn: ['Gas giant', 9.58, '−140 °C', '10.4 m/s²'],
+  Uranus: ['Ice giant', 19.2, '−195 °C', '8.7 m/s²'], Neptune: ['Ice giant', 30.1, '−200 °C', '11.2 m/s²'] };
+PLANETS.forEach(p => { const e = EXTRA[p.name];
+  p.extra = { Type: e[0], 'From Sun': e[1] + ' AU', 'Avg temp': e[2], Gravity: e[3], 'Axial tilt': p.tilt + '°' };
+  if (p.moons.length) p.extra['Major moons'] = p.moons.map(m => m.n).join(', '); });
+SUN_INFO.extra = { 'Core temp': '15 million °C', Gravity: '274 m/s²', Mass: '333,000 Earths', Rotation: '25 days' };
