@@ -1,22 +1,46 @@
-/* about.css — clean, static About page. No animation, no moving backgrounds. */
-html, body { height: auto; overflow: auto; }
-body { min-height: 100dvh; background: #050818; }
-.bg { position: fixed; inset: 0; z-index: -1; background:
+/* about.css — About page. Works on phones, tablets and desktops (touch scrolling, no sideways overflow).
+   Your design choices are kept (Orbitron heading, letter-spacing, glass cards).
+   Lines marked FIX are the changes made for mobile. */
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@700&display=swap');   /* loads the Orbitron font; falls back to a system font if offline */
+
+/* FIX 1 — scrolling. Only the page itself (html) scrolls. The old rule made BOTH html and body scroll containers,
+   and style.css gives body overscroll-behavior:none, which stopped touch swipes from reaching the page. */
+html { height: auto; min-height: 100%; overflow-x: hidden; overflow-y: auto; overscroll-behavior: auto; -webkit-text-size-adjust: 100%; }
+body { height: auto; min-height: 100vh; min-height: 100dvh; overflow: visible; overscroll-behavior: auto; background: #050818; }
+.bg { position: fixed; inset: 0; z-index: -1; pointer-events: none; background:
   radial-gradient(900px 480px at 15% -5%, rgba(70, 90, 210, .28), transparent 62%),
   radial-gradient(800px 460px at 100% 5%, rgba(130, 70, 200, .22), transparent 60%), #050818; }
-.about { max-width: 720px; margin: calc(env(safe-area-inset-top) + 10px) auto 48px; padding: 0 16px calc(24px + env(safe-area-inset-bottom)); display: grid; gap: 16px; font-size: 16px; }
-.hero { text-align: center; padding: 10px 10px 0px 10px; position: relative; display:inline-block; }
-.about h1.lg-text { font-family: 'orbitron', sans-serif; font-size: 5rem; font-weight: 700; color: #fff; letter-spacing: 4.5px; text-transform: uppercase;}
+
+/* FIX 2 — fit. One shrinkable column (minmax(0,1fr)) so a wide child can never stretch the page past the screen edge.
+   FIX 3 — the top margin now clears the fixed navigation bar. */
+.about { width: 100%; max-width: 720px; margin: calc(env(safe-area-inset-top) + 78px) auto 48px; padding: 0 16px calc(24px + env(safe-area-inset-bottom)); display: grid; grid-template-columns: minmax(0, 1fr); gap: 16px; font-size: 16px; box-sizing: border-box; }
+.about > * { min-width: 0; max-width: 100%; box-sizing: border-box; }
+.hero { text-align: center; padding: 10px; position: relative; display: block; }
+.avatar { width: 72px; height: 72px; margin: 0 auto 14px; border-radius: 50%; display: grid; place-items: center; font-size: 32px; font-weight: 800; color: #fff;
+  background: linear-gradient(135deg, #6f8cff, #b06bff); box-shadow: inset 0 1px 0 rgb(255 255 255 / .5), 0 14px 34px -10px rgb(111 140 255 / .55); }
+/* FIX 2 — fluid heading: was a fixed 5rem (80px), wider than a phone. Now scales with the screen (27px … 80px) and can wrap. */
+.about h1.lg-text { font-family: 'Orbitron', 'Segoe UI', system-ui, sans-serif; font-size: clamp(1.7rem, 9vw, 5rem); font-weight: 700; color: #fff; letter-spacing: .06em; text-transform: uppercase; margin: 0; line-height: 1.1; overflow-wrap: anywhere; }
+.about .lead { font-size: 1.05rem; line-height: 1.6; color: var(--muted); margin: 18px auto 0; max-width: 34ch; }
 .about .lg-card { padding: 22px; }
 .about .lg-card:hover { transform: none; }
 .about h2 { margin: 0 0 10px; font-size: 1.15rem; }
-.about p { line-height: 1.7; margin: 0 0 12px; color: var(--muted); } .about p:last-child { margin-bottom: 0; }
+.about p { line-height: 1.7; margin: 0 0 12px; color: var(--muted); overflow-wrap: anywhere; } .about p:last-child { margin-bottom: 0; }
+.projects { display: grid; gap: 12px; }
+.project { display: flex; gap: 14px; align-items: flex-start; }
+.project > div:last-child { min-width: 0; }
+.project .ic { flex: none; width: 44px; height: 44px; border-radius: 14px; display: grid; place-items: center; font-size: 22px; background: rgb(var(--lg-tint) / .14); box-shadow: inset 0 1px 0 rgb(var(--lg-edge) / .4); }
+.project h3 { margin: 2px 0 4px; font-size: 1rem; } .project p { margin: 0; font-size: .95rem; }
 .tags { display: flex; gap: 8px; flex-wrap: wrap; }
-.about .lg-btn { width: 100%; min-height: 50px; }
+.about .lg-btn { width: 100%; min-height: 50px; max-width: 100%; text-align: center; overflow-wrap: anywhere; }
 .foot { text-align: center; color: var(--muted); font-size: .85rem; padding-top: 6px; }
 @media (min-width: 700px) { .about .lg-btn { width: auto; justify-self: center; padding: 14px 34px; } }
-/* ---------- Video card (kept calm: no autoplay, no motion until you press play) ---------- */
-.video-card { padding-bottom: 14px; margin-top: -50px; }
+
+/* ---------- Video card (silent autoplay loop) ---------- */
+.video-card { padding-bottom: 14px; margin-top: 0; }                 /* FIX 3 — removed margin-top:-50px: it pulled the card up over the text above it */
 .video-frame { margin-top: 14px; border-radius: 16px; overflow: hidden; background: #02030a; box-shadow: inset 0 0 0 1px rgb(var(--lg-edge) / .22), 0 10px 30px -12px rgb(0 0 0 / .6); aspect-ratio: 16 / 9; }
 .video-frame video { width: 100%; height: 100%; display: block; object-fit: cover; background: #02030a; }   /* scales with the card on any screen */
-@media (max-width: 480px) { .video-card { padding: 16px 12px 12px; } .video-frame { border-radius: 12px; } }
+
+/* ---------- Small phones and landscape ---------- */
+@media (max-width: 480px) { .about { padding-left: 12px; padding-right: 12px; } .about .lg-card { padding: 18px 16px; } .video-card { padding: 16px 12px 12px; } .video-frame { border-radius: 12px; } }
+@media (max-width: 340px) { .about { padding-left: 10px; padding-right: 10px; } .about h2 { font-size: 1.05rem; } .about .lg-btn { font-size: .9rem; padding: 0 10px; } }
+@media (max-height: 480px) and (orientation: landscape) { .about { margin-top: calc(env(safe-area-inset-top) + 66px); } .about h1.lg-text { font-size: clamp(1.7rem, 6vw, 3rem); } }
