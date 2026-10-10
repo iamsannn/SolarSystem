@@ -25,15 +25,27 @@
 
 <main class="about">
   <section class="hero">
-    <div class="avatar" aria-hidden="true">S</div>
-    <h1 class="lg-text">About me</h1>
-    <p class="lead">Hi, I'm Sandeep Savant.</p>
+    <h1 class="lg-text">Sandeep Savant</h1>
+
   </section>
+  <!-- Video: autoplays silently on a loop. The file lives in videos/. -->
+  <section class="lg lg-card video-card">
+    <h2>The Solar System, explained</h2>
+    <p>A 96-second tour of the Sun, the eight planets, the asteroid and their orbits.</p>
+    <div class="video-frame">
+      <video id="tour-video" autoplay muted loop playsinline preload="auto" disablepictureinpicture disableremoteplayback poster="videos/poster.jpg" aria-label="The Solar System, explained: a silent, looping motion graphic">
+        <source src="videos/solar-system-explained.mp4" type="video/mp4">
+      </video>
+    </div>
+  </section>
+
 
   <!-- EDIT THE TEXT BELOW to tell your own story in your own words -->
   <section class="lg lg-card">
     <h2>My story</h2>
-    <p>I'm currently a vibe coder who loves building websites and apps</p>
+    <p>Hello! I'm a passionate developer who loves bringing ideas to life through code. Whether it's building intuitive websites or dynamic applications, 
+      I thrive on creating engaging digital experiences. My journey often starts with a simple concept that evolves into something much larger, 
+      like my interactive 3D Solar System project, which grew from a basic 2D page into a fully explorable, cross-device experience.</p>
     <p>This Solar System started as a simple 2D page and grew into a full 3D experience you can rotate, zoom and explore on any device.</p>
   </section>
 

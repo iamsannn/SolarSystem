@@ -12,6 +12,8 @@ html, body { margin: 0; height: 100%; overflow: hidden; background: var(--space)
 /* ---------- Top navigation (glass pill) ---------- */
 .topbar.lg-nav { position: fixed; top: 14px; left: 50%; transform: translateX(-50%); width: min(1120px, calc(100% - 28px)); margin: 0; z-index: 10; }
 .topbar h1 { margin: 0; font-size: 22px; white-space: nowrap; }
+.topbar h1.lg-text { font-family: "Avenir Next", "Segoe UI", system-ui, sans-serif; font-size: 15px; font-weight: 100; color: var(--lg-text); letter-spacing: -0.05em; text-transform: uppercase;}
+
 #planet-nav { flex: 1; min-width: 0; overflow-x: auto; flex-wrap: nowrap; scrollbar-width: none; justify-content: center; }
 .lg-nav-links a, .lg-nav-links button { color: inherit; font: inherit; font-size: 14px; font-weight: 500; text-decoration: none;
   background: none; border: 0; cursor: pointer; padding: 8px 14px; border-radius: 999px; white-space: nowrap;
